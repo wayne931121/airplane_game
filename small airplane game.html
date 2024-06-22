@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html>
+<body>
+<h1>HTML5 Canvas Draw Image</h1>
+
+<div style="display:none;">
+<img id="scream" width="220" height="auto" src="圖畫.svg">
+<img id="scream1" width="220" height="auto" src="圖畫-1.svg">
+<img id="scream2" width="220" height="auto" src="圖畫R.svg">
+<img id="scream3" width="220" height="auto" src="圖畫-2.svg">
+<img id="scream4" width="220" height="auto" src="圖畫G.svg">
+</div>
+
+<canvas id="myCanvas" width="1000" height="570" style="border:1px solid grey;">
+Sorry, your browser does not support canvas.
+</canvas>
+
+<script>
+const canvas = document.getElementById("myCanvas");
+const ctx = canvas.getContext("2d");
+const image = document.getElementById("scream");
+const image1 = document.getElementById("scream1");
+const image2 = document.getElementById("scream2");
+const image3 = document.getElementById("scream3");
+const image4 = document.getElementById("scream4");
+const scale = 3;
+let healblood = 1;
+let damageblood = 1;
+class Ball{
+  x=0;
+  y=0;
+  constructor(ctx, image, width, height) {
+    this.ctx = ctx;
+    this.image = image;
+    this.width = width;
+	this.height = height;
+  }
+  draw(){
+    this.update();
+	this.judge();
+    draw(this.image,this.x,this.y,this.width,this.height);
+  }
+  update(){
+    if(this.y>ctx.canvas.height){this.random();}else{this.y+=speed;}
+  }
+  set(x,y){
+    this.x = x;
+	this.y = y;
+	if(this.x==undefined){this.random();}
+  }
+  get(){
+    return [this.x,this.y];
+  }
+  detect(a,b){
+    let x = this.x+107.814/scale, y = this.y+146.70422/scale, r=60/scale;
+	/*
+	y=ax+b
+	(x1-x)**2+(y1-(ax+b))**2=r**2
+	b**2-4ac>=0
+	*/
+	let formula = (2*a*b-2*a*y-2*x)**2-4*(a**2+1)*(x**2+y**2-2*b*y+b**2-r**2);
+	if(formula>=0){//相交
+	  this.random();
+	  beated+=40;//0.01*100秒 每0.01秒更新一次 會運行40次
+	  blood-=damageblood;
+	}
+  }
+  judge(){
+    let nx = this.x+107.814/scale, ny = this.y+146.70422/scale, r=60/scale;
+    let line01 = cha(line1[0],line1[1],x,y);
+	let line02 = cha(line2[0],line2[1],x,y);
+	if(nx<=x+107.23944 && nx+r>=x+5.7042253000000000){this.detect(line01[0],line01[1]);}
+	else if(nx>=x+107.23944 && nx-r<=x+85.56338+106.85915){this.detect(line02[0],line02[1]);}
+  }
+  random(){
+    let r=60/scale;
+    this.x = Math.round(Math.random()*(canvas.width-r*2));
+	this.y = 0;
+  }
+}
+class Ball_1 extends Ball{
+  constructor(ctx, image, width, height) {
+    super(ctx, image, width, height);
+  }
+  detect(a,b){
+    let x = this.x+107.814/scale, y = this.y+146.70422/scale, r=60/scale;
+	/*
+	y=ax+b
+	(x1-x)**2+(y1-(ax+b))**2=r**2
+	b**2-4ac>=0
+	*/
+	let formula = (2*a*b-2*a*y-2*x)**2-4*(a**2+1)*(x**2+y**2-2*b*y+b**2-r**2);
+	if(formula>=0){//相交
+	  this.random();
+	  heal+=40;//0.01*100秒 每0.01秒更新一次 會運行40次
+	  blood+=healblood;
+	}
+  }
+}
+class Balls{
+  balls = [];
+  constructor(value, ctx, image, width, height, scale) {
+    for(let i=0;i<value;i++){
+	    this.balls.push(new Ball(ctx,image1,width/scale,height/scale));
+	}
+	this.value = value;
+  }
+  draw(){
+    for(let i=0;i<this.value;i++){this.balls[i].draw();}
+  }
+  update(){
+    for(let i=0;i<this.value;i++){this.balls[i].update();}
+  }
+  set(n,x,y){
+    this.balls[n].set(x,y);
+  }
+  get(n){
+    return this.balls[n].get();;
+  }
+  add(ctx, image, width, height, scale,x,y){
+    let b1 = new Ball(ctx,image,width/scale,height/scale);
+	b1.set(x,y);
+    this.balls.push(b1);
+	this.value++;
+  }
+  gadd(ctx, image, width, height, scale,x,y){
+    let b1 = new Ball_1(ctx,image,width/scale,height/scale);
+	b1.set(x,y);
+    this.balls.push(b1);
+	this.value++;
+  }
+}
+let balls = new Balls(0);
+//balls.add(ctx,image1,210,297,scale,0,0);
+//balls.add(ctx,image1,210,297,scale,150,0);
+balls.add(ctx,image1,210,297,scale);
+balls.add(ctx,image1,210,297,scale);
+balls.add(ctx,image1,210,297,scale);
+balls.add(ctx,image1,210,297,scale);
+balls.add(ctx,image1,210,297,scale);
+balls.add(ctx,image1,210,297,scale);
+balls.add(ctx,image1,210,297,scale);
+balls.add(ctx,image1,210,297,scale);
+balls.add(ctx,image1,210,297,scale);
+balls.gadd(ctx,image3,210,297,scale);
+balls.gadd(ctx,image3,210,297,scale);
+/*"M 107.23944,65.788732 5.7042253,174.92958 106.85915,134.61972 l 85.56338,39.16901 z"*/
+/*                                                                 (85.56338+106.85915,134.61972+39.16901)*/
+/*210 297*/
+function fun(x1,y1,x2,y2){
+    //y=mx+b
+    m=(y2-y1)/(x2-x1);
+	b=y1-m*x1;
+	return [m,b];
+}
+function cha(m,b,deltax,deltay){
+    //y=m(x-deltax)+b+deltay
+    b+=m*(-deltax)+deltay;
+	return [m,b];
+}
+function draw(img,x,y,w,h){
+    ctx.drawImage(img, x,y,w,h);
+}
+function clearAll(){
+    ctx.reset();
+}
+function drawAll(){
+    keyboard();
+    clearAll();
+	balls.draw();
+	if(heal>0){draw(image4,x,y,w,h);heal--;}else if(beated==0){draw(image,x,y,w,h);}else{draw(image2,x,y,w,h);beated--;};
+	set_blood()
+	draw_text()
+	if(lock){clearInterval(timeid);}
+}
+function keyboard(){
+        if(r && x<canvas.width-w+(w-85.56338-106.85915)){x+=speed;}
+	    if(l && x>0-5.7042253){x+=-speed;}
+	    if(u && y>0-65.788732){y+=-speed;}
+	    if(d && y<canvas.height-h+(h-174.92958)){y+=speed;}
+}
+window.addEventListener('keydown', function(event) {
+    let key=event.key;
+	//console.log(key);
+	switch (key){
+	    case "ArrowRight":
+		case "d":
+		    r=1;
+			break;
+		case "ArrowLeft":
+		case "a":
+		    l=1;
+			break;
+		case "ArrowUp":
+		case "w":
+		    u=1;
+			break;
+		case "ArrowDown":
+		case "s":
+		    d=1;
+			break;
+		default:
+		    null;
+	}
+});
+function debug(){
+    lock=true;
+}
+function start(){
+    lock=false;
+    timeid = setInterval(drawAll,10);
+}
+function stop(){
+    lock=true;
+}
+function draw_text(ca2d){
+    ctx.font = "30px sans-serif";
+    ctx.fillText("█:"+Math.round(blood*100)/100,0,30);
+}
+function set_blood(){
+    //10(ms):n=1000(ms):100n
+    if(blood<100){blood+=0.001;}
+	if(blood>100){blood=100;}
+	if(blood<=0){lock=true;blood=0;ctx.font = "180px sans-serif";ctx.fillText("LOSS",canvas.width/2-300,canvas.height/2+30);}
+}
+window.addEventListener('keyup', function(event) {
+    let key=event.key;
+	//console.log(key);
+	switch (key){
+	    case "ArrowRight":
+		case "d":
+		    r=0;
+			break;
+		case "ArrowLeft":
+		case "a":
+		    l=0;
+			break;
+		case "ArrowUp":
+		case "w":
+		    u=0;
+			break;
+		case "ArrowDown":
+		case "s":
+		    d=0;
+			break;
+		default:
+		    null;
+	}
+});
+line1 = fun(107.23944,65.788732  ,  5.7042253,174.92958);
+line2 = fun(107.23944,65.788732  ,  85.56338+106.85915,134.61972+39.16901);
+nline1 = cha(line1[0],line1[1],10,10);
+nline2 = cha(line2[0],line2[1],10,10);
+let x=0,y=0,w=210,h=297,speed=1,lock=false,r=0,l=0,u=0,d=0,timeid,blood=100,beated=0,heal=0;
+image.addEventListener("load", (e) => {
+  console.log(image);
+  timeid = setInterval(drawAll,10);
+});
+</script>
+
+</body>
+</html>
